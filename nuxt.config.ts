@@ -8,6 +8,7 @@ export default defineNuxtConfig({
       API_URL: process.env.API_URL,
     },
   },
+  routeRules: { "*": { prerender: true } },
   modules: ["@nuxtjs/tailwindcss", "shadcn-nuxt", "@nuxtjs/color-mode"],
   css: ["~/assets/css/tailwind.css"],
   shadcn: { prefix: "", componentDir: "./components/ui" },

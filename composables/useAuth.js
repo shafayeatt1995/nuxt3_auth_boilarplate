@@ -1,4 +1,4 @@
-import { removeCookie, setCookie } from "~/lib/utils";
+import { cookieParse, removeCookie, setCookie } from "~/lib/utils";
 
 export const useAuth = () => {
   const { api } = useApi();
@@ -19,13 +19,23 @@ export const useAuth = () => {
   const userLoggedIn = async () => {
     try {
       if (!authUser.value) {
-        const data = await api.get("/auth/user");
-        setUser(data.user);
-        return data;
+        let cookie = null;
+        if (typeof window !== "undefined") {
+          cookie = document?.cookie || null;
+        } else {
+          cookie = useRequestHeaders(["cookie"])?.cookie || null;
+        }
+        if (cookie && cookieParse(cookie)?.sessionToken) {
+          const data = await api.get("/auth/user");
+          setUser(data.user);
+        }
       }
-    } catch (error) {}
+      return authUser;
+    } catch (error) {
+      console.error(error);
+    }
   };
-  const logout = async () => {
+  const logout = () => {
     removeCookie("sessionToken");
     setUser(null);
     return null;
